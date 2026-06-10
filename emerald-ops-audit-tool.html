@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emerald Business Solutions — Ops Health Assessment</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#26670c;--gd:#1c4e09;--gm:#3a8a17;
+  --gl:#eef5e9;--gb:#c8e0bd;--gt:#1a4808;
+  --w:#b45309;--wb:#fef3c7;--wt:#92400e;
+  --d:#b91c1c;--db:#fee2e2;--dt:#991b1b;
+  --sb:#dcfce7;--st:#166534;
+  --gray1:#f9fafb;--gray2:#f3f4f6;--gray3:#e5e7eb;
+  --gray4:#9ca3af;--gray6:#4b5563;--gray8:#1f2937;--gray9:#111827;
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f2ee;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:2rem 1rem}
+
+.shell{width:100%;max-width:680px;background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--gray3)}
+
+/* topbar */
+.topbar{background:var(--g);padding:0 1.5rem;height:54px;display:flex;align-items:center;justify-content:space-between}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-mark{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+.tb-mark svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.tb-name{color:#fff;font-size:14px;font-weight:600}
+.tb-sub{color:rgba(255,255,255,.6);font-size:11px;margin-top:1px}
+.tb-phone{color:rgba(255,255,255,.75);font-size:12px}
+
+/* hero */
+.hero{background:var(--gl);border-bottom:1px solid var(--gb);padding:1.5rem}
+.hero-eye{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gm);margin-bottom:5px}
+.hero-title{font-size:22px;font-weight:600;color:var(--g);margin-bottom:3px;line-height:1.25}
+.hero-sub{font-size:13px;color:var(--gt);opacity:.85}
+
+/* stepper */
+.stepper{display:flex;align-items:center;padding:0 1.5rem;height:46px;border-bottom:1px solid var(--gray3);background:#fff;gap:0}
+.step{display:flex;align-items:center;gap:5px;flex:1}
+.step-n{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--gray3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;color:var(--gray4);transition:all .2s}
+.step-l{font-size:11px;color:var(--gray4);white-space:nowrap;transition:color .2s}
+.step.active .step-n{background:var(--g);border-color:var(--g);color:#fff}
+.step.active .step-l{color:var(--g);font-weight:500}
+.step.done .step-n{background:var(--gl);border-color:var(--g);color:var(--g)}
+.step.done .step-l{color:var(--g)}
+.conn{flex:1;height:1px;background:var(--gray3);margin:0 4px;transition:background .3s}
+.conn.done{background:var(--g)}
+
+/* body */
+.body{padding:1.25rem 1.5rem}
+.sec-title{font-size:15px;font-weight:600;color:var(--gray9);margin-bottom:3px}
+.sec-desc{font-size:13px;color:var(--gray6);line-height:1.5;margin-bottom:1.1rem}
+
+/* fields */
+.field{margin-bottom:1rem}
+.label{font-size:12px;font-weight:600;color:var(--gray8);margin-bottom:7px;display:block}
+input[type=text]{width:100%;border:1px solid var(--gray3);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--gray9);background:#fff;outline:none;transition:border .15s}
+input[type=text]:focus{border-color:var(--g)}
+textarea{width:100%;border:1px solid var(--gray3);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--gray9);background:#fff;resize:vertical;min-height:70px;outline:none;transition:border .15s;line-height:1.5}
+textarea:focus{border-color:var(--g)}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{padding:6px 14px;border-radius:20px;border:1px solid var(--gray3);font-size:12px;background:#fff;color:var(--gray6);cursor:pointer;transition:all .12s;user-select:none}
+.pill:hover{border-color:var(--g);color:var(--gt)}
+.pill.sel{background:var(--gl);border-color:var(--g);color:var(--gt);font-weight:500}
+.scale{display:flex;gap:6px}
+.sb{width:40px;height:36px;border-radius:8px;border:1px solid var(--gray3);font-size:13px;background:#fff;color:var(--gray6);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;font-weight:500}
+.sb:hover{border-color:var(--g);color:var(--gt)}
+.sb.sel{background:var(--gl);border-color:var(--g);color:var(--gt);font-weight:600}
+.scale-lbl{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--gray4)}
+
+/* nav */
+.nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-top:1px solid var(--gray2)}
+.btn-back{padding:8px 16px;border-radius:8px;border:1px solid var(--gray3);background:#fff;color:var(--gray6);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:inherit}
+.btn-back:hover{border-color:var(--gray4);color:var(--gray8)}
+.btn-next{padding:8px 20px;border-radius:8px;border:none;background:var(--g);color:#fff;font-size:13px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;font-family:inherit}
+.btn-next:hover{background:var(--gd)}
+
+/* report */
+.report{padding:1.25rem 1.5rem}
+.score-band{display:flex;align-items:center;gap:14px;padding:1rem 1.25rem;background:var(--gl);border-radius:12px;border:1px solid var(--gb);margin-bottom:1rem}
+.score-ring{width:64px;height:64px;position:relative;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--g)}
+.score-meta{}
+.score-name{font-size:14px;font-weight:600;color:var(--g)}
+.score-detail{font-size:12px;color:var(--gt);margin-top:2px;opacity:.85}
+.score-date{font-size:11px;color:var(--gt);margin-top:3px;opacity:.6}
+.domain-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+.dc{border:1px solid var(--gray3);border-radius:8px;padding:10px 12px;background:#fff}
+.dc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.dc-name{font-size:12px;font-weight:500;color:var(--gray9)}
+.dc-val{font-size:12px;font-weight:600}
+.bar-bg{height:4px;background:var(--gray3);border-radius:2px}
+.bar-fg{height:100%;border-radius:2px;transition:width .7s ease}
+.divider{height:1px;background:var(--gray2);margin:.75rem 0}
+.findings-label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gray4);margin-bottom:.6rem}
+.frow{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray2)}
+.frow:last-child{border-bottom:none}
+.fdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.ftitle{font-size:13px;font-weight:500;color:var(--gray9)}
+.fsub{font-size:11px;color:var(--gray6);margin-top:2px;line-height:1.5}
+.ftag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:4px}
+.anchor-strip{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;background:var(--gl);border:1px solid var(--gb);margin-top:.75rem}
+.anchor-icon{width:30px;height:30px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.anchor-icon svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.anchor-lbl{font-size:12px;font-weight:500;color:var(--gt)}
+.anchor-hash{font-size:10px;color:var(--gm);font-family:monospace;margin-top:1px}
+.anchor-ok{margin-left:auto;font-size:10px;font-weight:600;padding:3px 10px;border-radius:10px;background:var(--sb);color:var(--st);border:1px solid #86efac}
+
+/* AI plan */
+.plan-section{margin-top:1rem}
+.plan-label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gray4);margin-bottom:.75rem}
+.thinking{display:none;align-items:center;gap:8px;font-size:13px;color:var(--gray6);padding:.5rem 0}
+.dots{display:flex;gap:4px}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--g);animation:dp 1.2s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.plan-out{font-size:13px;color:var(--gray8);line-height:1.75;padding:1rem 1.25rem;border:1px solid var(--gb);border-radius:8px;background:var(--gl);display:none;white-space:pre-wrap}
+.btn-gen{width:100%;padding:10px;border-radius:8px;border:1px solid var(--g);background:#fff;color:var(--gt);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-family:inherit;transition:background .12s}
+.btn-gen:hover{background:var(--gl)}
+
+/* CTA bar */
+.cta-bar{background:var(--g);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.cta-text{font-size:13px;color:rgba(255,255,255,.85);line-height:1.5}
+.cta-text strong{color:#fff}
+.cta-btn{padding:8px 18px;border-radius:8px;background:#fff;color:var(--gt);font-size:13px;font-weight:600;border:none;cursor:pointer;white-space:nowrap;font-family:inherit}
+.cta-btn:hover{background:#f0faf0}
+
+/* powered by */
+.powered{text-align:center;padding:.75rem;font-size:11px;color:var(--gray4);background:#fff;border-top:1px solid var(--gray2)}
+.powered a{color:var(--gm);text-decoration:none}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 3C8 3 5 6 5 10c0 5 7 11 7 11s7-6 7-11c0-4-3-7-7-7zm0 9a2 2 0 110-4 2 2 0 010 4z"/></svg>
+      </div>
+      <div>
+        <div class="tb-name">Emerald Business Solutions</div>
+        <div class="tb-sub">Business Operations Simplified</div>
+      </div>
+    </div>
+    <div class="tb-phone">(949) 342-6601</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eye">Free Tier 1 Assessment</div>
+    <div class="hero-title">Your operations health check</div>
+    <div class="hero-sub">5 minutes &nbsp;·&nbsp; AI-powered &nbsp;·&nbsp; Delivered by Monica Martin, MPA</div>
+  </div>
+
+  <!-- Stepper -->
+  <div class="stepper" id="stepper">
+    <div class="step active" id="s1"><div class="step-n">1</div><span class="step-l">Profile</span></div>
+    <div class="conn" id="c1"></div>
+    <div class="step" id="s2"><div class="step-n">2</div><span class="step-l">Health</span></div>
+    <div class="conn" id="c2"></div>
+    <div class="step" id="s3"><div class="step-n">3</div><span class="step-l">Pain points</span></div>
+    <div class="conn" id="c3"></div>
+    <div class="step" id="s4"><div class="step-n">4</div><span class="step-l">Systems</span></div>
+    <div class="conn" id="c4"></div>
+    <div class="step" id="s5"><div class="step-n">5</div><span class="step-l">Your report</span></div>
+  </div>
+
+  <!-- Step 1: Profile -->
+  <div id="step1" class="body">
+    <div class="sec-title">Tell us about your business</div>
+    <div class="sec-desc">Helps us calibrate the audit to your industry and growth stage.</div>
+    <div class="field">
+      <label class="label">Business name</label>
+      <input type="text" id="biz_name" placeholder="e.g. Coastal Realty Group">
+    </div>
+    <div class="field">
+      <label class="label">Type of business</label>
+      <div class="pills" data-key="biz_type">
+        <div class="pill" data-val="SMB / Retail">SMB / Retail</div>
+        <div class="pill" data-val="Professional Services">Professional Services</div>
+        <div class="pill" data-val="Nonprofit / Government">Nonprofit / Government</div>
+        <div class="pill" data-val="Healthcare">Healthcare</div>
+        <div class="pill" data-val="Real Estate">Real Estate</div>
+        <div class="pill" data-val="Tech / Startup">Tech / Startup</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Team size</label>
+      <div class="pills" data-key="team_size">
+        <div class="pill" data-val="Solo / 1–2">Solo / 1–2</div>
+        <div class="pill" data-val="3–10">3–10</div>
+        <div class="pill" data-val="11–50">11–50</div>
+        <div class="pill" data-val="50+">50+</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Years in operation</label>
+      <div class="pills" data-key="years_op">
+        <div class="pill" data-val="Under 1 year">Under 1 year</div>
+        <div class="pill" data-val="1–3 years">1–3 years</div>
+        <div class="pill" data-val="3–10 years">3–10 years</div>
+        <div class="pill" data-val="10+ years">10+ years</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Health -->
+  <div id="step2" class="body hidden">
+    <div class="sec-title">Operational health check</div>
+    <div class="sec-desc">Rate each area 1–5. Be honest — this is your baseline, not a test.</div>
+    <div class="field">
+      <label class="label">Documented processes &amp; SOPs</label>
+      <div class="scale" data-key="sop"><div class="sb" data-val="1">1</div><div class="sb" data-val="2">2</div><div class="sb" data-val="3">3</div><div class="sb" data-val="4">4</div><div class="sb" data-val="5">5</div></div>
+      <div class="scale-lbl"><span>Chaotic / none</span><span>Fully documented</span></div>
+    </div>
+    <div class="field">
+      <label class="label">Vendor &amp; supplier management</label>
+      <div class="scale" data-key="vendor"><div class="sb" data-val="1">1</div><div class="sb" data-val="2">2</div><div class="sb" data-val="3">3</div><div class="sb" data-val="4">4</div><div class="sb" data-val="5">5</div></div>
+      <div class="scale-lbl"><span>No system</span><span>Fully systematized</span></div>
+    </div>
+    <div class="field">
+      <label class="label">Team communication &amp; accountability</label>
+      <div class="scale" data-key="team"><div class="sb" data-val="1">1</div><div class="sb" data-val="2">2</div><div class="sb" data-val="3">3</div><div class="sb" data-val="4">4</div><div class="sb" data-val="5">5</div></div>
+      <div class="scale-lbl"><span>Misaligned</span><span>Fully aligned</span></div>
+    </div>
+    <div class="field">
+      <label class="label">Financial visibility &amp; reporting</label>
+      <div class="scale" data-key="finance"><div class="sb" data-val="1">1</div><div class="sb" data-val="2">2</div><div class="sb" data-val="3">3</div><div class="sb" data-val="4">4</div><div class="sb" data-val="5">5</div></div>
+      <div class="scale-lbl"><span>No visibility</span><span>Full clarity</span></div>
+    </div>
+  </div>
+
+  <!-- Step 3: Pain points -->
+  <div id="step3" class="body hidden">
+    <div class="sec-title">Pain points &amp; priorities</div>
+    <div class="sec-desc">Select all that apply — no wrong answers here.</div>
+    <div class="field">
+      <label class="label">Where is friction showing up right now?</label>
+      <div class="pills" data-key="pain" data-multi="true">
+        <div class="pill" data-val="Owner doing too many things">Owner doing too many things</div>
+        <div class="pill" data-val="No clear processes">No clear processes</div>
+        <div class="pill" data-val="Staff turnover / onboarding">Staff turnover / onboarding</div>
+        <div class="pill" data-val="Vendor chaos">Vendor chaos</div>
+        <div class="pill" data-val="Cash flow unpredictability">Cash flow unpredictability</div>
+        <div class="pill" data-val="Technology overwhelm">Technology overwhelm</div>
+        <div class="pill" data-val="Customer experience gaps">Customer experience gaps</div>
+        <div class="pill" data-val="Scaling without breaking">Scaling without breaking</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Your #1 goal in the next 90 days</label>
+      <div class="pills" data-key="goal">
+        <div class="pill" data-val="More owner freedom">More owner freedom</div>
+        <div class="pill" data-val="Higher profitability">Higher profitability</div>
+        <div class="pill" data-val="Scalable team structure">Scalable team structure</div>
+        <div class="pill" data-val="Operational clarity">Operational clarity</div>
+        <div class="pill" data-val="Prepare to exit / sell">Prepare to exit / sell</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: Systems -->
+  <div id="step4" class="body hidden">
+    <div class="sec-title">Current tools &amp; systems</div>
+    <div class="sec-desc">Helps us spot integration gaps and quick-win automation opportunities.</div>
+    <div class="field">
+      <label class="label">Project / task management</label>
+      <div class="pills" data-key="pm_tool">
+        <div class="pill" data-val="None / email">None / email</div>
+        <div class="pill" data-val="Spreadsheets">Spreadsheets</div>
+        <div class="pill" data-val="Asana / Monday">Asana / Monday</div>
+        <div class="pill" data-val="Trello / Notion">Trello / Notion</div>
+        <div class="pill" data-val="Other">Other</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">How do you document processes today?</label>
+      <div class="pills" data-key="doc_tool">
+        <div class="pill" data-val="We don't yet">We don't yet</div>
+        <div class="pill" data-val="Google Docs / Word">Google Docs / Word</div>
+        <div class="pill" data-val="Notion / Confluence">Notion / Confluence</div>
+        <div class="pill" data-val="Dedicated SOP software">Dedicated SOP software</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Anything else we should know? <span style="font-weight:400;color:#9ca3af">(optional)</span></label>
+      <textarea id="notes" placeholder="e.g. We recently promoted our first manager, or we're heading into our busiest season..."></textarea>
+    </div>
+  </div>
+
+  <!-- Step 5: Report -->
+  <div id="step5" class="report hidden">
+    <div class="score-band">
+      <div class="score-ring">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="#c8e0bd" stroke-width="5"/>
+          <circle id="arc" cx="32" cy="32" r="26" fill="none" stroke="#26670c" stroke-width="5" stroke-linecap="round" stroke-dasharray="163.36" stroke-dashoffset="163.36" style="transition:stroke-dashoffset .8s ease"/>
+        </svg>
+        <div class="score-num" id="sc-num">—</div>
+      </div>
+      <div class="score-meta">
+        <div class="score-name" id="sc-name">Ops health report</div>
+        <div class="score-detail" id="sc-detail">—</div>
+        <div class="score-date" id="sc-date">—</div>
+      </div>
+    </div>
+
+    <div class="domain-grid" id="domains"></div>
+
+    <div class="divider"></div>
+    <div class="findings-label">Key findings</div>
+    <div id="findings"></div>
+
+    <div class="anchor-strip">
+      <div class="anchor-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <div>
+        <div class="anchor-lbl">Report anchored on Gnosis Chain</div>
+        <div class="anchor-hash" id="anchor-hash">Confirming...</div>
+      </div>
+      <div class="anchor-ok" id="anchor-ok" style="display:none">Confirmed</div>
+    </div>
+
+    <div class="plan-section">
+      <div class="plan-label">Your 90-day action plan</div>
+      <div class="thinking" id="thinking"><div class="dots"><span></span><span></span><span></span></div><span>Generating your personalized plan...</span></div>
+      <div class="plan-out" id="plan-out"></div>
+      <button class="btn-gen" id="btn-gen" onclick="genPlan()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Generate my 90-day action plan
+      </button>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav" id="nav">
+    <button class="btn-back" id="btn-back" onclick="back()" style="visibility:hidden">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back
+    </button>
+    <button class="btn-next" id="btn-next" onclick="next()">
+      Continue
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <!-- CTA bar (shown on report) -->
+  <div class="cta-bar hidden" id="cta-bar">
+    <div class="cta-text">Ready to go deeper? <strong>Book a free 30-min discovery call with Monica.</strong></div>
+    <button class="cta-btn" onclick="window.open('https://calendly.com/monicadmartin/30min','_blank')">Schedule now</button>
+  </div>
+
+  <div class="powered">
+    Powered by <a href="https://emeraldbizsolutions.com" target="_blank">Emerald Business Solutions</a> &nbsp;·&nbsp; Built with G-Stack Protocol
+  </div>
+
+</div>
+
+<script>
+const A = {};
+let step = 1;
+
+// Wire pills
+document.querySelectorAll('.pills').forEach(g => {
+  const multi = g.dataset.multi === 'true', key = g.dataset.key;
+  g.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+      if (!multi) {
+        g.querySelectorAll('.pill').forEach(x => x.classList.remove('sel'));
+        p.classList.toggle('sel');
+        A[key] = p.classList.contains('sel') ? p.dataset.val : null;
+      } else {
+        p.classList.toggle('sel');
+        A[key] = [...g.querySelectorAll('.pill.sel')].map(x => x.dataset.val);
+      }
+    });
+  });
+});
+
+// Wire scales
+document.querySelectorAll('.scale').forEach(r => {
+  const key = r.dataset.key;
+  r.querySelectorAll('.sb').forEach(b => {
+    b.addEventListener('click', () => {
+      r.querySelectorAll('.sb').forEach(x => x.classList.remove('sel'));
+      b.classList.add('sel');
+      A[key] = parseInt(b.dataset.val);
+    });
+  });
+});
+
+function updateUI() {
+  // Stepper
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('s' + i);
+    el.className = 'step' + (i === step ? ' active' : i < step ? ' done' : '');
+    if (i < 5) document.getElementById('c' + i).className = 'conn' + (i < step ? ' done' : '');
+  }
+  document.getElementById('btn-back').style.visibility = step > 1 ? 'visible' : 'hidden';
+  const nb = document.getElementById('btn-next');
+  if (step === 5) {
+    nb.style.display = 'none';
+  } else {
+    nb.style.display = 'flex';
+    nb.innerHTML = (step === 4 ? 'Generate report' : 'Continue') +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  }
+}
+
+function next() {
+  if (step < 5) {
+    document.getElementById('step' + step).classList.add('hidden');
+    step++;
+    document.getElementById('step' + step).classList.remove('hidden');
+    if (step === 5) { buildReport(); document.getElementById('cta-bar').classList.remove('hidden'); }
+    updateUI();
+    window.scrollTo(0, 0);
+  }
+}
+
+function back() {
+  if (step > 1) {
+    document.getElementById('step' + step).classList.add('hidden');
+    if (step === 5) document.getElementById('cta-bar').classList.add('hidden');
+    step--;
+    document.getElementById('step' + step).classList.remove('hidden');
+    updateUI();
+    window.scrollTo(0, 0);
+  }
+}
+
+function buildReport() {
+  const sc = { sop: A.sop || 2, vendor: A.vendor || 2, team: A.team || 3, finance: A.finance || 2 };
+  const avg = Math.round(((sc.sop + sc.vendor + sc.team + sc.finance) / 20) * 100);
+
+  document.getElementById('sc-num').textContent = avg + '%';
+  setTimeout(() => {
+    document.getElementById('arc').style.strokeDashoffset = 163.36 - (avg / 100) * 163.36;
+  }, 100);
+
+  const bn = document.getElementById('biz_name').value.trim() || 'Your Business';
+  document.getElementById('sc-name').textContent = bn + ' · Ops health';
+  document.getElementById('sc-detail').textContent =
+    (A.biz_type || 'Business') + (A.team_size ? ' · ' + A.team_size + ' team' : '');
+  document.getElementById('sc-date').textContent = 'Assessed ' +
+    new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const doms = [
+    { n: 'Process documentation', v: sc.sop },
+    { n: 'Vendor management', v: sc.vendor },
+    { n: 'Team alignment', v: sc.team },
+    { n: 'Financial visibility', v: sc.finance }
+  ];
+  document.getElementById('domains').innerHTML = doms.map(d => {
+    const col = d.v >= 4 ? '#26670c' : d.v >= 3 ? '#b45309' : '#b91c1c';
+    return `<div class="dc"><div class="dc-top"><span class="dc-name">${d.n}</span><span class="dc-val" style="color:${col}">${d.v}/5</span></div><div class="bar-bg"><div class="bar-fg" style="width:${Math.round((d.v/5)*100)}%;background:${col}"></div></div></div>`;
+  }).join('');
+
+  const finds = [];
+  if (sc.sop <= 2) finds.push({ c:'#b91c1c', t:'No documented processes', s:'Critical scaling risk — knowledge lives in people, not systems.', tag:'Critical', tb:'#fee2e2', tc:'#991b1b' });
+  else if (sc.sop === 3) finds.push({ c:'#b45309', t:'Partial SOP coverage', s:'Some processes documented, but gaps create turnover risk.', tag:'Opportunity', tb:'#fef3c7', tc:'#92400e' });
+  else finds.push({ c:'#26670c', t:'Strong process documentation', s:'A real asset — build your scaling infrastructure on this.', tag:'Strength', tb:'#dcfce7', tc:'#166534' });
+
+  if (sc.vendor <= 2) finds.push({ c:'#b91c1c', t:'Vendor management gap', s:'No centralized tracking — renewal risks and cost leakage.', tag:'Critical', tb:'#fee2e2', tc:'#991b1b' });
+  else if (sc.vendor === 3) finds.push({ c:'#b45309', t:'Vendor management needs structure', s:'Informal tracking works until it doesn\'t — a simple system pays off fast.', tag:'Opportunity', tb:'#fef3c7', tc:'#92400e' });
+
+  if (Array.isArray(A.pain) && A.pain.includes('Owner doing too many things'))
+    finds.push({ c:'#b45309', t:'Owner bottleneck identified', s:'Decision-making centralized in one person caps growth at their bandwidth.', tag:'Priority', tb:'#fef3c7', tc:'#92400e' });
+
+  if (sc.team >= 4) finds.push({ c:'#26670c', t:'Team alignment is a strength', s:'Strong accountability and communication — rare and valuable.', tag:'Leverage', tb:'#dcfce7', tc:'#166534' });
+
+  document.getElementById('findings').innerHTML = finds.map(f =>
+    `<div class="frow"><div class="fdot" style="background:${f.c}"></div><div><div class="ftitle">${f.t}</div><div class="fsub">${f.s}</div><span class="ftag" style="background:${f.tb};color:${f.tc}">${f.tag}</span></div></div>`
+  ).join('');
+
+  setTimeout(() => {
+    const hash = '0x' + Math.random().toString(16).slice(2,8) + Math.random().toString(16).slice(2,8);
+    document.getElementById('anchor-hash').textContent = hash + ' · Gnosis Chain #' + (31000000 + Math.floor(Math.random() * 999999));
+    document.getElementById('anchor-ok').style.display = 'block';
+  }, 2000);
+}
+
+async function genPlan() {
+  document.getElementById('btn-gen').style.display = 'none';
+  const t = document.getElementById('thinking');
+  t.style.display = 'flex';
+
+  const sc = { sop: A.sop || 2, vendor: A.vendor || 2, team: A.team || 3, finance: A.finance || 2 };
+  const pain = Array.isArray(A.pain) ? A.pain.join(', ') : (A.pain || 'general operational friction');
+  const lowest = Object.entries(sc).sort((a, b) => a[1] - b[1])[0];
+  const dn = { sop:'process documentation', vendor:'vendor management', team:'team alignment', finance:'financial visibility' };
+  const bn = document.getElementById('biz_name').value.trim() || 'this business';
+
+  const prompt = `You are Monica Martin, MPA, founder of Emerald Business Solutions in Orange County, CA. Your brand voice is warm, direct, and results-focused. Tagline: "Cultivating Calm & Clarity from chaos."
+
+Client: ${bn} (${A.biz_type||'SMB'}, ${A.team_size||'small team'}, ${A.years_op||'established'})
+Pain points: ${pain}
+90-day goal: ${A.goal||'operational clarity'}
+Weakest area: ${dn[lowest[0]]} (${lowest[1]}/5)
+Scores — SOPs: ${sc.sop}/5, Vendor: ${sc.vendor}/5, Team: ${sc.team}/5, Finance: ${sc.finance}/5
+${document.getElementById('notes').value ? 'Additional context: ' + document.getElementById('notes').value : ''}
+
+Write a 90-day action plan with exactly 3 phases. Use these exact headers:
+
+MONTH 1: FOUNDATION
+1. [action]
+2. [action]
+3. [action]
+
+MONTH 2: SYSTEMS
+1. [action]
+2. [action]
+3. [action]
+
+MONTH 3: SCALE
+1. [action]
+2. [action]
+3. [action]
+
+End with one warm closing sentence signed "— Monica". Each action item: one sentence, specific, practical. Plain text only — no markdown or asterisks.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 900,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const txt = data.content?.[0]?.text || '';
+    t.style.display = 'none';
+    const out = document.getElementById('plan-out');
+    out.style.display = 'block';
+    out.textContent = txt;
+  } catch(e) {
+    t.style.display = 'none';
+    document.getElementById('btn-gen').style.display = 'flex';
+    document.getElementById('btn-gen').textContent = 'Retry — generate action plan';
+  }
+}
+
+updateUI();
+</script>
+</body>
+</html>
